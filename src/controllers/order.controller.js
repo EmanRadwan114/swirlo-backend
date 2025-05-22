@@ -263,7 +263,7 @@ const getAllOrders = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail material color orderCount",
+        select: "title price thumbnail ingredients orderCount",
       });
 
     if (orders.length === 0)
@@ -315,7 +315,7 @@ const getUserOrders = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail material color orderCount",
+        select: "title price thumbnail ingredients orderCount",
       });
 
     if (orders.length === 0)
@@ -359,7 +359,7 @@ const getOrderByID = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail material color orderCount",
+        select: "title price thumbnail ingredients orderCount",
       });
 
     if (!order) return res.status(404).json({ message: "order is not found" });
@@ -397,7 +397,7 @@ const updateOrderByID = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail material color orderCount",
+        select: "title price thumbnail ingredients orderCount",
       });
 
     if (!order) return res.status(404).json({ message: "order is not found" });
@@ -446,7 +446,7 @@ const deleteOrderByID = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail material color orderCount",
+        select: "title price thumbnail ingredients orderCount",
       });
 
     if (!order) return res.status(404).json({ message: "order is not found" });

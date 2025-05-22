@@ -152,8 +152,7 @@ const searchProduct = async (req, res) => {
       $or: [
         { title: { $regex: term, $options: "i" } },
         { description: { $regex: term, $options: "i" } },
-        { material: { $regex: term, $options: "i" } },
-        { color: { $regex: term, $options: "i" } },
+        { ingredients: { $regex: term, $options: "i" } },
       ],
     }));
 
@@ -209,18 +208,14 @@ const filterProducts = async (req, res) => {
 
       filterQuery.categoryID = catId;
     }
-    if (query.search) {
-      filterQuery.title = { $regex: query.search, $options: "i" };
+    if (query.title) {
+      filterQuery.title = { $regex: query.title, $options: "i" };
     }
-    if (query.material) {
-      const materialQuery = query.material.includes("-")
-        ? query.material.split("-").join(" ")
-        : query.material;
-      filterQuery.material = { $regex: materialQuery, $options: "i" };
-    }
-
-    if (query.color) {
-      filterQuery.color = { $regex: query.color, $options: "i" };
+    if (query.ingredients) {
+      const ingredientsQuery = query.ingredients.includes("-")
+        ? query.ingredients.split("-").join(" ")
+        : query.ingredients;
+      filterQuery.ingredients = { $regex: ingredientsQuery, $options: "i" };
     }
 
     if (query.price) {

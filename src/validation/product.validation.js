@@ -8,7 +8,14 @@ ajvFormats(ajv);
 
 const addProductSchema = {
   type: "object",
-  required: ["categoryID", "title", "description", "thumbnail", "stock", "price"],
+  required: [
+    "categoryID",
+    "title",
+    "description",
+    "thumbnail",
+    "stock",
+    "price",
+  ],
   properties: {
     categoryID: { type: "string", pattern: "^[a-fA-F0-9]{24}$" },
     title: { type: "string", minLength: 4 },
@@ -20,8 +27,7 @@ const addProductSchema = {
     },
     stock: { type: "number", minimum: 0 },
     price: { type: "number", minimum: 0 },
-    material: { type: "string" },
-    color: { type: "string" },
+    ingredients: { type: "string" },
     avgRating: { type: "number", minimum: 0, maximum: 5 },
     numberOfReviews: { type: "number", minimum: 0 },
     label: {
@@ -40,11 +46,11 @@ const addProductSchema = {
       images: "each image must be a valid URL",
       stock: "stock must be a number greater than or equal to 0",
       price: "price must be a number greater than or equal to 0",
-      material: "material must be a string",
-      color: "color must be a string",
+      ingredients: "ingredients must be a string",
       avgRating: "average rating must be a number between 0 and 5",
       numberOfReviews: "number of reviews must be a non-negative number",
-      label: "label must be an array containing 'hot', 'trendy', or 'new arrival'",
+      label:
+        "label must be an array containing 'hot', 'trendy', or 'new arrival'",
       orderCount: "order count must be a non-negative number",
     },
     additionalProperties: "unexpected extra property in request body",
@@ -63,8 +69,7 @@ const updateProductSchema = {
     },
     stock: { type: "number", minimum: 0 },
     price: { type: "number", minimum: 0 },
-    material: { type: "string" },
-    color: { type: "string" },
+    ingredients: { type: "string" },
     label: {
       type: "array",
       items: { type: "string", enum: ["hot", "trendy", "new arrival"] },
@@ -83,11 +88,11 @@ const updateProductSchema = {
       images: "images must be valid URLs",
       stock: "stock must be a non-negative number",
       price: "price must be a non-negative number",
-      material: "material must be a string",
-      color: "color must be a string",
+      ingredients: "ingredients must be a string",
       avgRating: "average rating must be a number between 0 and 5",
       numberOfReviews: "number of reviews must be a non-negative number",
-      label: "label must be an array containing 'hot', 'trendy', or 'new arrival'",
+      label:
+        "label must be an array containing 'hot', 'trendy', or 'new arrival'",
       orderCount: "order count must be a non-negative number",
     },
     additionalProperties: "unexpected extra property in request body",
