@@ -1,7 +1,7 @@
 {
   "name": "swirlo",
   "version": "1.0.0",
-  "description": "Furniture E-commerce Website",
+  "description": "Coffee Shop E-commerce Website",
   "main": "app.js",
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
     "start": "node app.js"
   },
   "keywords": [
-    "furniture",
+    "coffee shop",
     "ecommerce"
   ],
   "author": "",
