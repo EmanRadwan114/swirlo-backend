@@ -1,8 +1,11 @@
 import bcrypt from "bcrypt";
+import { OAuth2Client } from "google-auth-library";
 import User from "../../db/models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 import verifyToken from "../utils/verifyToken.js";
 import generateAndSendActivationEmail from "../utils/emailActivation.js";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // ^----------------------------------Registeration--------------------------
 const RegisterUser = async (req, res) => {
@@ -163,6 +166,93 @@ const signIn = async (req, res) => {
   }
 };
 
+// ^----------------------------------Login using google API--------------------------
+const signInWithGoogle = async (req, res) => {
+  try {
+    //* 1- check if email exists or not
+    const { token } = req.body;
+
+    if (!token)
+      return res
+        .status(400)
+        .json({ message: "please provide valid user token" });
+
+    //* Verify Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const { email } = payload;
+
+    if (!email)
+      return res
+        .status(400)
+        .json({ message: "please provide valid user email" });
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "email does not exist" });
+    }
+
+    if (!user.isEmailActive)
+      return res.status(400).json({
+        message:
+          "your email is not active. you can activate it using the activation link sent to your email",
+      });
+
+    //* 2- check if password is correct or not
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect)
+      return res.status(401).json({ message: "incorrect password" });
+
+    //* 3- generate user token
+    const userToken = generateToken(
+      { email: user.email, id: user._id, role: user.role },
+      process.env.USER_TOKEN_SECRET_KEY,
+      "7d"
+    );
+
+    //* 4- send token in http-only cookie to prevent js access
+    res.cookie("token", userToken, {
+      httpOnly: true,
+      sameSite: "none", // Change from "none" to "lax" for development
+      secure: true, // Keep false for HTTP in development
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      path: "/", // Ensure cookie is available on all paths
+    });
+
+    //* 4- send success msg
+    res.status(200).json({
+      message: "successful login",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isEmailActive: user.isEmailActive,
+        role: user.role,
+        image: user.image,
+        address: user.address,
+      },
+    });
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      const errors = {};
+
+      for (let field in err.errors) {
+        errors[field] = err.errors[field].message;
+      }
+      return res.status(400).json({ message: "validation error", errors });
+    }
+
+    res.status(500).json({ message: "server error" });
+  }
+};
+
 const forgetPassword = (req, res) => {}; //additional feature
 
 const resetPassword = (req, res) => {}; //additional feature
@@ -196,6 +286,7 @@ export default {
   RegisterUser,
   emailActivation,
   signIn,
+  signInWithGoogle,
   logOut,
   forgetPassword,
   resetPassword,

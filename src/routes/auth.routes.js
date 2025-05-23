@@ -25,6 +25,8 @@ authRouter.post(
   userControllers.signIn
 );
 
+authRouter.post("/login/google", userControllers.signInWithGoogle);
+
 //* user logout
 authRouter.post(
   "/logout",
