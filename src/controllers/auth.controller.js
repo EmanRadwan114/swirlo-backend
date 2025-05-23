@@ -187,6 +187,7 @@ const signInWithGoogle = async (req, res) => {
 
     const { email } = payload;
 
+    //* Verify email
     if (!email)
       return res
         .status(400)
@@ -203,12 +204,6 @@ const signInWithGoogle = async (req, res) => {
         message:
           "your email is not active. you can activate it using the activation link sent to your email",
       });
-
-    //* 2- check if password is correct or not
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordCorrect)
-      return res.status(401).json({ message: "incorrect password" });
 
     //* 3- generate user token
     const userToken = generateToken(
