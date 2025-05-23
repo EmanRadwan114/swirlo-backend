@@ -14,7 +14,7 @@ import cartRouter from "./src/routes/cart.routes.js";
 import orderRouter from "./src/routes/order.routes.js";
 import reviewRouter from "./src/routes/review.routes.js";
 import userRouter from "./src/routes/user.routes.js";
-import wishlistRouter from "./src/routes/wishlist.routes.js";
+import favoritesRouter from "./src/routes/favorites.routes.js";
 import orderController from "./src/controllers/order.controller.js";
 
 // ^------------------create server
@@ -57,7 +57,7 @@ app.use("/products", productRouter);
 app.use("/cart", cartRouter);
 app.use("/orders", orderRouter);
 app.use("/reviews", reviewRouter);
-app.use("/wishlist", wishlistRouter);
+app.use("/favorites", favoritesRouter);
 
 // ^------------------error handling
 app.use((req, res, next) => {

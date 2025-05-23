@@ -13,7 +13,7 @@ const userSchema = new Schema(
       required: [true, "password is required"],
     },
     role: { type: String, enum: ["user", "admin"], default: "user" },
-    wishlist: [
+    favorites: [
       {
         type: Types.ObjectId,
         ref: "Product",
@@ -30,13 +30,13 @@ const userSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-//*Role-based wishlist validation
-userSchema.path("wishlist").validate(function (value) {
+//*Role-based favorites validation
+userSchema.path("favorites").validate(function (value) {
   if (this.role === "admin" && value.length > 0) {
     return false;
   }
   return true;
-}, "Admins cannot have a wishlist");
+}, "Admins cannot have a favorites");
 
 //*Role-based address validation
 userSchema.path("address").validate(function (value) {
