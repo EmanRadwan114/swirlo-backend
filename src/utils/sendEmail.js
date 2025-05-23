@@ -26,7 +26,7 @@ export const activateEmailHTMLContent = (activationLink) => `<!DOCTYPE html>
     text-align:center;
     }
     .header img {
-      width: 80%;
+      width: 60%;
       border-radius: 10px 10px 0 0;
     }
     h2 {
