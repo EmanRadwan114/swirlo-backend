@@ -53,7 +53,7 @@ export const activateEmailHTMLContent = (activationLink) => `<!DOCTYPE html>
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://i.imgur.com/xmLPDgh.png" alt="Activate Your Email">
+      <img src="https://i.postimg.cc/kg8Lttyn/logo3.png" alt="Activate Your Email">
     </div>
     <h2>Welcome to SWIRLO!</h2>
     <p>Thanks for signing up. Please confirm your email address to activate your email.</p>
@@ -151,7 +151,7 @@ export const orderDetailsHTMLContent = (order) => {
   <body>
     <div class="container">
     <div class="header">
-    <img src="https://i.imgur.com/xmLPDgh.png" alt="Company Logo" class="logo">
+    <img src="https://i.postimg.cc/kg8Lttyn/logo3.png" alt="Company Logo" class="logo">
         <h1>Order Confirmation</h1>
         <p>Thank you for your purchase!</p>
         </div>
