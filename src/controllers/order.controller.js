@@ -88,11 +88,8 @@ export const createOrder = async (req, res) => {
 
       for (const item of cart.cartItems) {
         const product = item.productId;
-        if (product.stock > 0) {
-          product.stock -= item.quantity; // Decrease the stock by the quantity in the cart
-          product.orderCount++;
-          await product.save();
-        }
+        product.orderCount++;
+        await product.save();
       }
 
       await sendEmail(
@@ -198,15 +195,10 @@ export const createWebhook = async (req, res) => {
         );
       }
 
-      // 3. Decrement stock for each product in the order
       for (const orderItem of updatedOrder.orderItems) {
         const product = await Product.findById(orderItem.productId);
-        if (product && product.stock > 0) {
-          // Decrement the stock based on the quantity ordered
-          product.stock -= orderItem.quantity;
-          product.orderCount++;
-          await product.save();
-        }
+        product.orderCount++;
+        await product.save();
       }
 
       const user = await User.findById(updatedOrder.userID);
@@ -263,7 +255,7 @@ const getAllOrders = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail ingredients orderCount",
+        select: "title price thumbnail orderCount",
       });
 
     if (orders.length === 0)
@@ -315,7 +307,7 @@ const getUserOrders = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail ingredients orderCount",
+        select: "title price thumbnail orderCount",
       });
 
     if (orders.length === 0)
@@ -359,7 +351,7 @@ const getOrderByID = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail ingredients orderCount",
+        select: "title price thumbnail orderCount",
       });
 
     if (!order) return res.status(404).json({ message: "order is not found" });
@@ -397,7 +389,7 @@ const updateOrderByID = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail ingredients orderCount",
+        select: "title price thumbnail orderCount",
       });
 
     if (!order) return res.status(404).json({ message: "order is not found" });
@@ -446,7 +438,7 @@ const deleteOrderByID = async (req, res) => {
       .populate("userID", "name email image")
       .populate({
         path: "orderItems.productId",
-        select: "title price thumbnail ingredients orderCount",
+        select: "title price thumbnail orderCount",
       });
 
     if (!order) return res.status(404).json({ message: "order is not found" });
