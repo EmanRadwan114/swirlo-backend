@@ -66,6 +66,7 @@ const getUserCart = async (req, res, userID) => {
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
       select: "title thumbnail price",
+      select: "title thumbnail price",
     });
 
     if (!cart) return res.status(404).json({ message: "no cart for user" });
@@ -115,6 +116,7 @@ const getCartForCheckout = async (req, res, userID) => {
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
       select: "title thumbnail price",
+      select: "title thumbnail price",
     });
 
     if (!cart) return res.status(404).json({ message: "no cart for user" });
@@ -150,6 +152,7 @@ const updateCartItem = async (req, res, userID) => {
     //get cart of user
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
+      select: "title thumbnail price",
       select: "title thumbnail price",
     });
     if (!cart) return res.status(404).json({ message: "no cart for user" });
@@ -199,6 +202,7 @@ const deleteCartItem = async (req, res, userID) => {
 
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
+      select: "title thumbnail price",
       select: "title thumbnail price",
     });
     if (!cart) return res.status(404).json({ message: "no cart for user" });
