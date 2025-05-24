@@ -43,8 +43,30 @@ const getFavorites = async (req, res) => {
     } else {
       productsFavorites = user.favorites.slice(skip, skip + limit);
     }
+
+    let finalProducts = [];
+
+    for (const item of productsFavorites) {
+      const product = await Product.findById(item._id).populate("categoryID");
+      const category = product.categoryID;
+      delete product.categoryID;
+      const newProd = {
+        _id: item._id,
+        title: item.title,
+        price: item.price,
+        avgRating: item.avgRating,
+        numberOfReviews: item.numberOfReviews,
+        thumbnail: item.thumbnail,
+        label: item.label,
+        description: item.description,
+        category: category.name,
+      };
+
+      finalProducts.push(newProd);
+    }
+
     res.status(200).json({
-      favorites: productsFavorites,
+      favorites: finalProducts,
       currentPage: page,
       totalPages: Math.ceil(total / limit),
     });

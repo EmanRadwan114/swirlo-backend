@@ -65,7 +65,7 @@ const getUserCart = async (req, res, userID) => {
     //get cart with product data
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
-      select: "title thumbnail price ingredients stock",
+      select: "title thumbnail price",
     });
 
     if (!cart) return res.status(404).json({ message: "no cart for user" });
@@ -73,8 +73,9 @@ const getUserCart = async (req, res, userID) => {
     //if product is out of stock will be removed
     const validCartItems = cart.cartItems.filter((item) => {
       const product = item.productId; //productId holds the product object
-      return product && product.stock > 0;
+      return product;
     });
+
     //to maintain any change
     if (validCartItems.length !== cart.cartItems.length) {
       cart.cartItems = validCartItems;
@@ -100,6 +101,8 @@ const getUserCart = async (req, res, userID) => {
       subtotal,
     });
   } catch (err) {
+    console.log(err);
+
     res.status(500).json({ message: "server error" });
   }
 };
@@ -111,7 +114,7 @@ const getCartForCheckout = async (req, res, userID) => {
         .json({ message: "you are not authorized to get this content" });
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
-      select: "title thumbnail price ingredients stock",
+      select: "title thumbnail price",
     });
 
     if (!cart) return res.status(404).json({ message: "no cart for user" });
@@ -119,8 +122,9 @@ const getCartForCheckout = async (req, res, userID) => {
     //if product is out of stock will be removed
     const validCartItems = cart.cartItems.filter((item) => {
       const product = item.productId; //productId holds the product object
-      return product && product.stock > 0;
+      return product;
     });
+
     //to maintain any change
     if (validCartItems.length !== cart.cartItems.length) {
       cart.cartItems = validCartItems;
@@ -131,6 +135,8 @@ const getCartForCheckout = async (req, res, userID) => {
       data: cart.cartItems,
     });
   } catch (err) {
+    console.log(err);
+
     res.status(500).json({ message: "server error" });
   }
 };
@@ -144,7 +150,7 @@ const updateCartItem = async (req, res, userID) => {
     //get cart of user
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
-      select: "title thumbnail price ingredients stock",
+      select: "title thumbnail price",
     });
     if (!cart) return res.status(404).json({ message: "no cart for user" });
 
@@ -193,7 +199,7 @@ const deleteCartItem = async (req, res, userID) => {
 
     let cart = await Cart.findOne({ userID }).populate({
       path: "cartItems.productId",
-      select: "title thumbnail price ingredients stock",
+      select: "title thumbnail price",
     });
     if (!cart) return res.status(404).json({ message: "no cart for user" });
 

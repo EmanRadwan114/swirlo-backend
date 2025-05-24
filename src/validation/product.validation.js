@@ -8,14 +8,7 @@ ajvFormats(ajv);
 
 const addProductSchema = {
   type: "object",
-  required: [
-    "categoryID",
-    "title",
-    "description",
-    "thumbnail",
-    "stock",
-    "price",
-  ],
+  required: ["categoryID", "title", "description", "thumbnail", "price"],
   properties: {
     categoryID: { type: "string", pattern: "^[a-fA-F0-9]{24}$" },
     title: { type: "string", minLength: 4 },
@@ -25,9 +18,7 @@ const addProductSchema = {
       type: "array",
       items: { type: "string", format: "uri" },
     },
-    stock: { type: "number", minimum: 0 },
     price: { type: "number", minimum: 0 },
-    ingredients: { type: "string" },
     avgRating: { type: "number", minimum: 0, maximum: 5 },
     numberOfReviews: { type: "number", minimum: 0 },
     label: {
@@ -44,9 +35,7 @@ const addProductSchema = {
       description: "description is required",
       thumbnail: "thumbnail must be a valid URL",
       images: "each image must be a valid URL",
-      stock: "stock must be a number greater than or equal to 0",
       price: "price must be a number greater than or equal to 0",
-      ingredients: "ingredients must be a string",
       avgRating: "average rating must be a number between 0 and 5",
       numberOfReviews: "number of reviews must be a non-negative number",
       label:
@@ -67,9 +56,7 @@ const updateProductSchema = {
       type: "array",
       items: { type: "string", format: "uri" },
     },
-    stock: { type: "number", minimum: 0 },
     price: { type: "number", minimum: 0 },
-    ingredients: { type: "string" },
     label: {
       type: "array",
       items: { type: "string", enum: ["hot", "trendy", "new arrival"] },
@@ -86,9 +73,7 @@ const updateProductSchema = {
       description: "description must be at least 10 characters",
       thumbnail: "thumbnail must be a valid URL",
       images: "images must be valid URLs",
-      stock: "stock must be a non-negative number",
       price: "price must be a non-negative number",
-      ingredients: "ingredients must be a string",
       avgRating: "average rating must be a number between 0 and 5",
       numberOfReviews: "number of reviews must be a non-negative number",
       label:
