@@ -167,7 +167,7 @@ const searchProduct = async (req, res) => {
 
     if (searchedProducts.length === 0)
       return res
-        .status(404)
+        .status(200)
         .json({ message: "no products found that match your search" });
 
     res.status(200).json({
@@ -233,7 +233,7 @@ const filterProducts = async (req, res) => {
 
     if (filteredProducts.length === 0)
       return res
-        .status(404)
+        .status(200)
         .json({ message: "no products found that match your filteration" });
 
     res.status(200).json({
