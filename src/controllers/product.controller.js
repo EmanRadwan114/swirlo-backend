@@ -185,63 +185,66 @@ const searchProduct = async (req, res) => {
 //^-------------------------------Filter Product--------------------------------
 const filterProducts = async (req, res) => {
   try {
-    const query = req.query;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6;
+    const { title, price, page = 1, limit = 6 } = req.query;
+
     const skip = (page - 1) * limit;
-
     const filterQuery = {};
-    if (query.category) {
-      let catId = query.category;
 
-      // if it’s not a valid ObjectId, look up by name
-      if (!mongoose.Types.ObjectId.isValid(catId)) {
-        const catDoc = await Category.findOne({
-          name: new RegExp("^" + query.category + "$", "i"),
-        });
-        if (!catDoc) {
-          return res.status(404).json({ message: "Category not found" });
-        }
-        catId = catDoc._id;
-      }
+    // Handle title filter (combined from multiple frontend checkboxes)
+    if (title) {
+      // Split the comma-separated title string into individual filters
+      const titleFilters = title
+        .split(", ")
+        .map((filter) => filter.toLowerCase());
 
-      filterQuery.categoryID = catId;
-    }
-    if (query.title) {
-      filterQuery.title = { $regex: query.title, $options: "i" };
-    }
-    if (query.description) {
-      filterQuery.description = { $regex: query.description, $options: "i" };
+      // Create an OR condition for each title filter
+      filterQuery.$or = [
+        {
+          title: { $in: titleFilters.map((filter) => new RegExp(filter, "i")) },
+        },
+        {
+          description: {
+            $in: titleFilters.map((filter) => new RegExp(filter, "i")),
+          },
+        },
+      ];
     }
 
-    if (query.price) {
-      filterQuery.price = { $lte: +query.price };
+    // Handle price filter
+    if (price) {
+      filterQuery.price = { $lte: Number(price) };
     }
+
+    // Get total count and paginated results
     const total = await Product.countDocuments(filterQuery);
     const totalPages = Math.ceil(total / limit);
 
     const filteredProducts = await Product.find(filterQuery)
-      .sort({
-        createdAt: -1,
-      })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    if (filteredProducts.length === 0)
-      return res
-        .status(200)
-        .json({ message: "no products found that match your filteration" });
+    if (filteredProducts.length === 0) {
+      return res.status(200).json({
+        message: "No products found that match your filters",
+        data: [],
+        currentPage: Number(page),
+        totalPages,
+      });
+    }
 
     res.status(200).json({
       message: "success",
       data: filteredProducts,
-      currentPage: page,
+      currentPage: Number(page),
       totalPages,
     });
   } catch (err) {
-    console.log(err);
-
-    res.status(500).json({ message: "server error" });
+    console.error(err);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
