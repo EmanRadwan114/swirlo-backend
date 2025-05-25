@@ -52,7 +52,7 @@ const getUser = async (userID, res) => {
         .json({ message: "you are not authorized to get this content" });
 
     const user = await User.findById(userID).select(
-      "-createdAt -updatedAt -password -isEmailActive"
+      "-updatedAt -password -isEmailActive"
     );
 
     if (!user) return res.status(404).json({ message: "user is not found" });
