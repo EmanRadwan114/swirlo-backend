@@ -210,6 +210,9 @@ const filterProducts = async (req, res) => {
     if (query.title) {
       filterQuery.title = { $regex: query.title, $options: "i" };
     }
+    if (query.description) {
+      filterQuery.description = { $regex: query.description, $options: "i" };
+    }
 
     if (query.price) {
       filterQuery.price = { $lte: +query.price };
