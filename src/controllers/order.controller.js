@@ -311,7 +311,7 @@ const getUserOrders = async (req, res) => {
       });
 
     if (orders.length === 0)
-      return res.status(404).json({ message: "no orders found" });
+      return res.status(200).json({ message: "no orders found" });
 
     const allOrders = orders.map((order) => {
       const { userID, orderItems, ...rest } = order.toObject();
