@@ -4,6 +4,7 @@ import User from "../../db/models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 import verifyToken from "../utils/verifyToken.js";
 import generateAndSendActivationEmail from "../utils/emailActivation.js";
+import crypto from "crypto";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -185,7 +186,7 @@ const signInWithGoogle = async (req, res) => {
 
     const payload = ticket.getPayload();
 
-    const { email } = payload;
+    const { email, name } = payload;
 
     //* Verify email
     if (!email)
@@ -195,19 +196,31 @@ const signInWithGoogle = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ message: "email does not exist" });
-    }
+    let newUser;
 
-    if (!user.isEmailActive)
-      return res.status(400).json({
-        message:
-          "your email is not active. you can activate it using the activation link sent to your email",
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString("hex"); // 64 characters
+      const hashedPassword = await bcrypt.hash(
+        randomPassword,
+        +process.env.USER_PASS_SALT_ROUNDS
+      );
+
+      newUser = new User({
+        email,
+        name,
+        password: hashedPassword,
+        isEmailActive: true,
       });
+      await newUser.save();
+    }
 
     //* 3- generate user token
     const userToken = generateToken(
-      { email: user.email, id: user._id, role: user.role },
+      {
+        email: user?.email || newUser?.email,
+        id: user?._id || newUser?._id,
+        role: user?.role || newUser?.role,
+      },
       process.env.USER_TOKEN_SECRET_KEY,
       "7d"
     );
@@ -225,13 +238,13 @@ const signInWithGoogle = async (req, res) => {
     res.status(200).json({
       message: "successful login",
       user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isEmailActive: user.isEmailActive,
-        role: user.role,
-        image: user.image,
-        address: user.address,
+        id: user?._id || newUser._id,
+        name: user?.name || newUser?.name,
+        email: user?.email || newUser?.email,
+        isEmailActive: user?.isEmailActive || newUser?.isEmailActive,
+        role: user?.role || newUser?.role,
+        image: user?.image || newUser?.image,
+        address: user?.address || newUser?.address,
       },
     });
   } catch (err) {

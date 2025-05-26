@@ -5,9 +5,6 @@ const validateRequestBody = (schema) => {
         message: "Request body is required.",
       });
     }
-
-    // console.log("Received body:", req.body);
-
     const valid = schema(req.body);
     const errors = [];
 
