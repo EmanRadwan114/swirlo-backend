@@ -20,7 +20,7 @@ const getAllProducts = async (req, res) => {
         .limit(limit);
     }
     if (products.length === 0) {
-      res.status(404).json({ message: "no products found" });
+      res.status(200).json({ message: "no products found" });
     }
     res.status(200).json({
       message: "success",
@@ -63,7 +63,7 @@ const getProductsByCategory = async (req, res) => {
       "categoryID"
     );
     if (products.length === 0) {
-      res.status(404).json({ message: "no products found" });
+      res.status(200).json({ message: "no products found" });
     }
     res.status(200).json({ message: "success", data: products });
   } catch (err) {
@@ -81,7 +81,7 @@ const getProductsByLabel = async (req, res) => {
       createdAt: -1,
     });
     if (products.length === 0) {
-      res.status(404).json({ message: "no products found" });
+      res.status(200).json({ message: "no products found" });
     }
     res.status(200).json({ message: "success", data: products });
   } catch (err) {
@@ -257,7 +257,7 @@ const getLeastOrderedProduct = async (req, res) => {
 
     if (leastOrderedProducts.length === 0)
       return res
-        .status(404)
+        .status(200)
         .json({ message: "no least ordered products found" });
 
     res.status(200).json({ message: "success", data: leastOrderedProducts });
@@ -275,7 +275,7 @@ const getBestSellingProducts = async (req, res) => {
 
     if (bestSellingProducts.length === 0)
       return res
-        .status(404)
+        .status(200)
         .json({ message: "no best selling products found" });
 
     bestSellingProducts = bestSellingProducts.slice(0, 6);
