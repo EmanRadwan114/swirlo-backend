@@ -58,14 +58,24 @@ const getProductsByCategory = async (req, res) => {
       return res.status(404).json({ message: "Category not found" });
     }
     const total = await Product.countDocuments({ categoryID: category._id });
+    const totalPages = Math.ceil(total / limit);
+
     //populate to get data of category with products
-    const products = await Product.find({ categoryID: category._id }).populate(
-      "categoryID"
-    );
+    const products = await Product.find({ categoryID: category._id })
+      .populate("categoryID")
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
+
     if (products.length === 0) {
       res.status(200).json({ message: "no products found" });
     }
-    res.status(200).json({ message: "success", data: products });
+    res.status(200).json({
+      message: "success",
+      data: products,
+      currentPage: page,
+      totalPages,
+    });
   } catch (err) {
     res.status(500).json({ message: "server error" });
   }
