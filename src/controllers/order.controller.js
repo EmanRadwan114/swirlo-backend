@@ -125,7 +125,7 @@ export const createOrder = async (req, res) => {
             orderId: order._id.toString(),
             couponCode: couponCode || "",
           },
-          success_url: `${process.env.FRONT_URL}/orders/${order._id}`,
+          success_url: `${process.env.FRONT_URL}/order-confirmation/${order._id}`,
           cancel_url: `${process.env.FRONT_URL}/cart`,
         });
       } catch (stripeErr) {
