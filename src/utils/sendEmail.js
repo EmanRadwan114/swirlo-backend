@@ -1,4 +1,3 @@
-import { createTransport } from "nodemailer";
 
 //* HTML content
 export const activateEmailHTMLContent = (activationLink) => `<!DOCTYPE html>
@@ -200,26 +199,49 @@ export const orderDetailsHTMLContent = (order) => {
 `;
 };
 
-//* create nodemailer transporter
-const transporter = createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.USER_NODE_MAILER_EMAIL,
-    pass: process.env.USER_APP_NODE_MAILER_PASS,
-  },
-});
-
+//* send email function using Brevo HTTPS REST API (Port 443 - never blocked by cloud firewalls)
 const sendEmail = async (to, subject, HTMLContent, data) => {
   try {
-    await transporter.sendMail({
-      from: `"SWIRLO" <${process.env.USER_NODE_MAILER_EMAIL}>`,
-      to: to || process.env.USER_NODE_MAILER_EMAIL,
-      subject: subject,
-      html: typeof HTMLContent === "function" ? HTMLContent(data) : HTMLContent,
+    const html =
+      typeof HTMLContent === "function" ? HTMLContent(data) : HTMLContent;
+    const senderEmail =
+      process.env.BREVO_SENDER_EMAIL ||
+      process.env.USER_NODE_MAILER_EMAIL ||
+      "wppractic@gmail.com";
+    const recipientEmail = to || senderEmail;
+
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: "SWIRLO",
+          email: senderEmail,
+        },
+        to: [
+          {
+            email: recipientEmail,
+          },
+        ],
+        subject: subject,
+        htmlContent: html,
+      }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `Brevo API error (${response.status}): ${JSON.stringify(errorData)}`
+      );
+    }
+
     return true;
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending email via Brevo API:", error.message || error);
     throw error; // Re-throw the error for handling at a higher level
   }
 };
